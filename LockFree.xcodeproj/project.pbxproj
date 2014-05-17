@@ -7,7 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		5792E35E19241C7200DC1ADD /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5792E35D19241C7200DC1ADD /* main.cpp */; };
+		5783C17C1926C69B0010AF47 /* LockFree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5783C17A1926C69B0010AF47 /* LockFree.cpp */; };
+		5792E35E19241C7200DC1ADD /* lockstack.h in Sources */ = {isa = PBXBuildFile; fileRef = 5792E35D19241C7200DC1ADD /* lockstack.h */; };
 		5792E36019241C7200DC1ADD /* LockFree.1 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5792E35F19241C7200DC1ADD /* LockFree.1 */; };
 /* End PBXBuildFile section */
 
@@ -25,8 +26,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5783C17A1926C69B0010AF47 /* LockFree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LockFree.cpp; sourceTree = "<group>"; };
+		5783C17D19277CF30010AF47 /* lockfreestack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lockfreestack.h; sourceTree = "<group>"; };
+		5783C17E19277D260010AF47 /* spinlockedstack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spinlockedstack.h; sourceTree = "<group>"; };
 		5792E35A19241C7200DC1ADD /* LockFree */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LockFree; sourceTree = BUILT_PRODUCTS_DIR; };
-		5792E35D19241C7200DC1ADD /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		5792E35D19241C7200DC1ADD /* lockstack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lockstack.h; sourceTree = "<group>"; };
 		5792E35F19241C7200DC1ADD /* LockFree.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = LockFree.1; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -60,8 +64,11 @@
 		5792E35C19241C7200DC1ADD /* LockFree */ = {
 			isa = PBXGroup;
 			children = (
-				5792E35D19241C7200DC1ADD /* main.cpp */,
+				5792E35D19241C7200DC1ADD /* lockstack.h */,
 				5792E35F19241C7200DC1ADD /* LockFree.1 */,
+				5783C17A1926C69B0010AF47 /* LockFree.cpp */,
+				5783C17D19277CF30010AF47 /* lockfreestack.h */,
+				5783C17E19277D260010AF47 /* spinlockedstack.h */,
 			);
 			path = LockFree;
 			sourceTree = "<group>";
@@ -117,7 +124,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5792E35E19241C7200DC1ADD /* main.cpp in Sources */,
+				5783C17C1926C69B0010AF47 /* LockFree.cpp in Sources */,
+				5792E35E19241C7200DC1ADD /* lockstack.h in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -197,6 +205,7 @@
 		5792E36419241C7200DC1ADD /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -204,6 +213,7 @@
 		5792E36519241C7200DC1ADD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -227,6 +237,7 @@
 				5792E36519241C7200DC1ADD /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
