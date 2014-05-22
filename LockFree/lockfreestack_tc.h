@@ -1,3 +1,10 @@
+//  Created by Kakysha on 22.05.14.
+//  Copyright (c) 2014 home. All rights reserved.
+//
+//  Stack without ABA problem with memory reclamation based
+//  on counting threads currently in pop()
+//
+
 #include <atomic>
 
 template <typename T>

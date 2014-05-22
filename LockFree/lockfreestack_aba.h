@@ -1,10 +1,9 @@
-//
-//  lockfreestack_leak.h
-//  LockFree
-//
-//  Created by Drunk on 22.05.14.
+//  Created by Kakysha on 22.05.14.
 //  Copyright (c) 2014 home. All rights reserved.
 //
+//  Stack with ABA problem. No memory reclamation.
+//
+
 
 template<typename T>
 class LockFreeStack_aba

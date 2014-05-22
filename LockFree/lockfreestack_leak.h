@@ -1,3 +1,9 @@
+//  Created by Kakysha on 22.05.14.
+//  Copyright (c) 2014 home. All rights reserved.
+//
+//  Stack without ABA problem. No memory reclamation.
+//
+
 #include <atomic>
 
 template <typename T>
