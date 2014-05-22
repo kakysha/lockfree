@@ -85,7 +85,7 @@ public:
             {
                 return;
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(250));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
     }
     
@@ -98,7 +98,7 @@ public:
             {
                 return res ? res->data : std::shared_ptr<T>();
             }
-            std::this_thread::sleep_for(std::chrono::milliseconds(250));
+            //std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
     }
     
