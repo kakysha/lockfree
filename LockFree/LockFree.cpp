@@ -9,6 +9,7 @@
 #include "lockstack.h"
 #include "lockfreestack.h"
 #include "spinlockedstack.h"
+#include "lockfreestack_leak.h"
 
 struct LockedElement
 {
@@ -69,8 +70,8 @@ template<class Stack, class Element>
 double Test(int nthreads)
 {
     const int num_elements = 10000;
-    const int test_time = 1;
-    const int test_iterations = 5;
+    const int test_time = 1000;
+    const int test_iterations = 2;
     const int elem_per_thread = num_elements / nthreads;
     long long ops = 0;
     
@@ -88,7 +89,7 @@ double Test(int nthreads)
         }
         
         running.store(true, std::memory_order_release);
-        std::this_thread::sleep_for(std::chrono::milliseconds(test_time*1000));
+        std::this_thread::sleep_for(std::chrono::milliseconds(test_time));
         running.store(false, std::memory_order_release);
         
         for(int i = 0; i < nthreads; i++)
@@ -109,7 +110,8 @@ int main()
         double lockFreeTime = Test<LockFreeStack, LockFreeElement>(i);
         double lockedTime = Test<LockedStack<LockedElement>, LockedElement>(i);
         double spinLockedTime = Test<SpinLockedStack<LockedElement>, LockedElement>(i);
-        printf("%d threads, Locked:%8d/sec, Lockfree:%8d/sec, Spinlock:%8d/sec\n", i, (int)lockedTime, (int)lockFreeTime, (int)spinLockedTime);
+        double lockFreeTimeLeak = 0;//Test<LockFreeStack_leak, LockFreeLeakElement>(i);
+        printf("%d threads, Locked:%6d/msec, Lockfree:%6d/msec, Spinlock:%6d/msec, LockFree_leak:%6d/msec\n", i, (int)lockedTime, (int)lockFreeTime, (int)spinLockedTime, (int)lockFreeTimeLeak);
     }
     return 0;
 }

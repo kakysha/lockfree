@@ -1,5 +1,4 @@
 #include <atomic>
-#include <unistd.h>
 
 class LockFreeStack
 {
@@ -88,7 +87,7 @@ public:
             {
                 return;
             }
-            usleep(50);
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
     }
     
@@ -101,7 +100,7 @@ public:
             {
                 return res;
             }
-            usleep(50);
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));
         }
     }
     
