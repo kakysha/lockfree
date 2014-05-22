@@ -46,7 +46,7 @@ void Worker(Stack& st, Element* elems, int numElements, int* numOps, int threadI
                     assert(*elem == 0);
                     *elem = 1;
                     mine.pop_back();
-                    st.push(*elem);
+                    st.push(elem);
                 }
                 ops++;
                 break;
