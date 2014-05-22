@@ -1,44 +1,108 @@
-//
-//  lockfreestack_leak.h
-//  LockFree
-//
-//  Created by Drunk on 22.05.14.
-//  Copyright (c) 2014 home. All rights reserved.
-//
+#include <atomic>
 
-template<typename T>
+template <typename T>
 class LockFreeStack_leak
 {
-private:
+public:
     struct node {
         std::shared_ptr<T> data;
         node* next = nullptr;
         node(T const& data_): data(std::make_shared<T>(data_)){}
         node(std::shared_ptr<T> const& data_ptr): data(data_ptr){}
     };
-    std::atomic<node*> head;
-public:
-    LockFreeStack_leak() {
-        head.store(nullptr);
-    }
-    void push(T const& data)
+    
+    class TaggedPointer
     {
-        node* const new_node=new node(data);
-        push_node(new_node);
+    public:
+        TaggedPointer(): m_node(nullptr), m_counter(0) {}
+        
+        node* GetNode()
+        {
+            return m_node.load(std::memory_order_acquire);
+        }
+        
+        uint64_t GetCounter()
+        {
+            return m_counter.load(std::memory_order_acquire);
+        }
+        
+        bool CompareAndSwap(node* oldNode, uint64_t oldCounter, node* newNode, uint64_t newCounter)
+        {
+            bool cas_result;
+            __asm__ __volatile__
+            (
+             "lock cmpxchg16b %0;"  // cmpxchg16b sets ZF on success
+             "setz       %3;"  // if ZF set, set cas_result to 1
+             
+             : "+m" (*this), "+a" (oldNode), "+d" (oldCounter), "=q" (cas_result)
+             : "b" (newNode), "c" (newCounter)
+             : "cc", "memory"
+             );
+            return cas_result;
+        }
+    private:
+        std::atomic<node*> m_node;
+        std::atomic<uint64_t> m_counter;
     }
-    void push(std::shared_ptr<T> const& data_ptr)
+    // 16-byte alignment is required for double-width
+    // compare and swap
+    //
+    __attribute__((aligned(16)));
+    
+    bool TryPushStack(std::shared_ptr<T> const& data_ptr)
     {
         node* const new_node=new node(data_ptr);
-        push_node(new_node);
+        node* oldHead;
+        uint64_t oldCounter;
+        
+        oldHead = m_head.GetNode();
+        oldCounter = m_head.GetCounter();
+        new_node->next = oldHead;
+        return m_head.CompareAndSwap(oldHead, oldCounter, new_node, oldCounter + 1);
     }
-    void push_node(node* const& new_node) {
-        new_node->next=head.load();
-        while(!head.compare_exchange_weak(new_node->next,new_node));
+    
+    bool TryPopStack(node*& oldHead)
+    {
+        oldHead = m_head.GetNode();
+        uint64_t oldCounter = m_head.GetCounter();
+        if(oldHead == nullptr)
+        {
+            return true;
+        }
+        //m_hazard[threadId*8].store(oldHead, std::memory_order_seq_cst);
+        if(m_head.GetNode() != oldHead)
+        {
+            return false;
+        }
+        return m_head.CompareAndSwap(oldHead, oldCounter, oldHead->next, oldCounter + 1);
     }
+    
+    void push(std::shared_ptr<T> const& data_ptr)
+    {
+        while(true)
+        {
+            if(TryPushStack(data_ptr))
+            {
+                return;
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        }
+    }
+    
     std::shared_ptr<T> pop()
     {
-        node* old_head=head.load();
-        while(old_head && !head.compare_exchange_weak(old_head,old_head->next));
-        return old_head ? old_head->data : std::shared_ptr<T>();
+        node* res;
+        while(true)
+        {
+            if(TryPopStack(res))
+            {
+                return res ? res->data : std::shared_ptr<T>();
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(250));
+        }
     }
+    
+private:
+    TaggedPointer m_head;
+    std::atomic<node*> m_hazard[MAX_THREADS*8];
 };

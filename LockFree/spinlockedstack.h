@@ -28,7 +28,7 @@ template<class T>
 class SpinLockedStack
 {
 public:
-    void Push(T* entry)
+    void push(T entry)
     {
         m_lock.Acquire();
         m_stack.push(entry);
@@ -39,7 +39,7 @@ public:
     // For compatability with the LockFreeStack interface,
     // add an unused int parameter.
     //
-    T* Pop(int)
+    T pop()
     {
         m_lock.Acquire();
         if(m_stack.empty())
@@ -47,7 +47,7 @@ public:
             m_lock.Release();
             return nullptr;
         }
-        T* ret = m_stack.top();
+        T ret = m_stack.top();
         m_stack.pop();
         m_lock.Release();
         return ret;
@@ -55,5 +55,5 @@ public:
     
 private:
     SpinLock m_lock;
-    std::stack<T*> m_stack;
+    std::stack<T> m_stack;
 };

@@ -1,5 +1,6 @@
 #define MAX_THREADS 4
 
+#include <iostream>
 #include <cstdlib>
 #include <thread>
 #include <chrono>
@@ -7,15 +8,11 @@
 #include <sys/time.h>
 #include <cassert>
 #include "lockstack.h"
-#include "lockfreestack.h"
-#include "spinlockedstack.h"
 #include "lockfreestack_leak.h"
+#include "spinlockedstack.h"
+#include "lockfreestack_aba.h"
 
 struct LockedElement
-{
-    int data;
-};
-struct LockFreeElement: public LockFreeStack::Node
 {
     int data;
 };
@@ -107,10 +104,10 @@ int main()
 {
     for(int i=1; i<=MAX_THREADS; i++)
     {
-        double lockFreeTime = 0;//Test<LockFreeStack, LockFreeElement>(i);
-        double lockedTime = 0;//Test<LockedStack<LockedElement>, LockedElement>(i);
-        double spinLockedTime = 0;//Test<SpinLockedStack<LockedElement>, LockedElement>(i);
-        double lockFreeTimeLeak = Test<LockFreeStack_leak<int>, int>(i);
+        double lockFreeTime = Test<LockFreeStack_leak<int>, int>(i);
+        double lockedTime = Test<LockedStack<std::shared_ptr<int>>, int>(i);
+        double spinLockedTime = Test<SpinLockedStack<std::shared_ptr<int>>, int>(i);
+        double lockFreeTimeLeak = Test<LockFreeStack_aba<int>, int>(i);
         printf("%d threads, Locked:%6d/msec, Lockfree:%6d/msec, Spinlock:%6d/msec, LockFree_leak:%6d/msec\n", i, (int)lockedTime, (int)lockFreeTime, (int)spinLockedTime, (int)lockFreeTimeLeak);
     }
     return 0;
