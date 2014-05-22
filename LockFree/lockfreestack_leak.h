@@ -92,14 +92,8 @@ public:
     std::shared_ptr<T> pop()
     {
         node* res;
-        while(true)
-        {
-            if(TryPopStack(res))
-            {
-                return res ? res->data : std::shared_ptr<T>();
-            }
-            //std::this_thread::sleep_for(std::chrono::milliseconds(250));
-        }
+        while(!TryPopStack(res)){}
+        return res ? res->data : std::shared_ptr<T>();
     }
     
 private:

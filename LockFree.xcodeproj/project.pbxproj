@@ -30,6 +30,7 @@
 		5783C17D19277CF30010AF47 /* lockfreestack_leak.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lockfreestack_leak.h; sourceTree = "<group>"; };
 		5783C17E19277D260010AF47 /* spinlockedstack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = spinlockedstack.h; sourceTree = "<group>"; };
 		5783C17F192D4AD50010AF47 /* lockfreestack_aba.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lockfreestack_aba.h; sourceTree = "<group>"; };
+		5783C181192E96780010AF47 /* lockfreestack_tc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = lockfreestack_tc.h; sourceTree = "<group>"; };
 		5792E35A19241C7200DC1ADD /* LockFree */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = LockFree; sourceTree = BUILT_PRODUCTS_DIR; };
 		5792E35D19241C7200DC1ADD /* lockstack.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = lockstack.h; sourceTree = "<group>"; };
 		5792E35F19241C7200DC1ADD /* LockFree.1 */ = {isa = PBXFileReference; lastKnownFileType = text.man; path = LockFree.1; sourceTree = "<group>"; };
@@ -65,6 +66,7 @@
 		5792E35C19241C7200DC1ADD /* LockFree */ = {
 			isa = PBXGroup;
 			children = (
+				5783C181192E96780010AF47 /* lockfreestack_tc.h */,
 				5792E35D19241C7200DC1ADD /* lockstack.h */,
 				5792E35F19241C7200DC1ADD /* LockFree.1 */,
 				5783C17A1926C69B0010AF47 /* LockFree.cpp */,

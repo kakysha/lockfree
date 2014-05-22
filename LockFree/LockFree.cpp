@@ -8,9 +8,10 @@
 #include <sys/time.h>
 #include <cassert>
 #include "lockstack.h"
-#include "lockfreestack_leak.h"
 #include "spinlockedstack.h"
 #include "lockfreestack_aba.h"
+#include "lockfreestack_leak.h"
+#include "lockfreestack_tc.h"
 
 struct LockedElement
 {
@@ -104,11 +105,12 @@ int main()
 {
     for(int i=1; i<=MAX_THREADS; i++)
     {
-        double lockFreeTime = Test<LockFreeStack_leak<int>, int>(i);
+        double lockFreeTimeLeak = Test<LockFreeStack_leak<int>, int>(i);
         double lockedTime = Test<LockedStack<std::shared_ptr<int>>, int>(i);
         double spinLockedTime = Test<SpinLockedStack<std::shared_ptr<int>>, int>(i);
-        double lockFreeTimeLeak = Test<LockFreeStack_aba<int>, int>(i);
-        printf("%d threads, Locked:%6d/msec, Lockfree:%6d/msec, Spinlock:%6d/msec, LockFree_leak:%6d/msec\n", i, (int)lockedTime, (int)lockFreeTime, (int)spinLockedTime, (int)lockFreeTimeLeak);
+        double lockFreeTimeABA = Test<LockFreeStack_aba<int>, int>(i);
+        double lockFreeTimeTC = Test<LockFreeStack_tc<int>, int>(i);
+        printf("%d threads, Locked:%6d/msec, Lockfree_leak:%6d/msec, Spinlock:%6d/msec, LockFree_ABA:%6d/msec LockFree_TC:%6d/msec\n", i, (int)lockedTime, (int)lockFreeTimeLeak, (int)spinLockedTime, (int)lockFreeTimeABA, (int)lockFreeTimeTC);
     }
     return 0;
 }
