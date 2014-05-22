@@ -26,36 +26,36 @@ template<class Stack, class Element>
 void Worker(Stack& st, Element* elems, int numElements, int* numOps, int threadId)
 {
     unsigned int seed = rand();
-    std::vector<Element*> mine;
+    std::vector<std::shared_ptr<Element>> mine;
     int ops = 0;
     for(int i=0; i<numElements; i++)
     {
-        mine.push_back(&elems[i]);
-        elems[i].data = 0;
+        elems[i] = 0;
+        mine.push_back(std::make_shared<Element>(elems[i]));
     }
     while(!running.load(std::memory_order_acquire)){}
     while(running.load(std::memory_order_acquire))
     {
-        Element* elem;
+        std::shared_ptr<Element> elem;
         switch(rand_r(&seed)&1)
         {
             case 0:
                 if(mine.size())
                 {
                     elem = mine.back();
-                    assert(elem->data == 0);
-                    elem->data = 1;
+                    assert(*elem == 0);
+                    *elem = 1;
                     mine.pop_back();
-                    st.Push(elem);
+                    st.push(*elem);
                 }
                 ops++;
                 break;
             case 1:
-                elem = static_cast<Element*>(st.Pop(threadId));
+                elem = st.pop();
                 if(elem != nullptr)
                 {
-                    assert(elem->data == 1);
-                    elem->data = 0;
+                    assert(*elem == 1);
+                    *elem = 0;
                     mine.push_back(elem);
                 }
                 ops++;
@@ -66,7 +66,7 @@ void Worker(Stack& st, Element* elems, int numElements, int* numOps, int threadI
 }
 
 
-template<class Stack, class Element>
+template<typename Stack, typename Element>
 double Test(int nthreads)
 {
     const int num_elements = 10000;
@@ -77,7 +77,7 @@ double Test(int nthreads)
     
     for(int it = 0; it < test_iterations; it++)
     {
-        Stack st;
+        Stack& st = *(new Stack());
         Element* elements = new Element[num_elements];
         
         std::thread threads[MAX_THREADS];
@@ -107,10 +107,10 @@ int main()
 {
     for(int i=1; i<=MAX_THREADS; i++)
     {
-        double lockFreeTime = Test<LockFreeStack, LockFreeElement>(i);
-        double lockedTime = Test<LockedStack<LockedElement>, LockedElement>(i);
-        double spinLockedTime = Test<SpinLockedStack<LockedElement>, LockedElement>(i);
-        double lockFreeTimeLeak = 0;//Test<LockFreeStack_leak, LockFreeLeakElement>(i);
+        double lockFreeTime = 0;//Test<LockFreeStack, LockFreeElement>(i);
+        double lockedTime = 0;//Test<LockedStack<LockedElement>, LockedElement>(i);
+        double spinLockedTime = 0;//Test<SpinLockedStack<LockedElement>, LockedElement>(i);
+        double lockFreeTimeLeak = Test<LockFreeStack_leak<int>, int>(i);
         printf("%d threads, Locked:%6d/msec, Lockfree:%6d/msec, Spinlock:%6d/msec, LockFree_leak:%6d/msec\n", i, (int)lockedTime, (int)lockFreeTime, (int)spinLockedTime, (int)lockFreeTimeLeak);
     }
     return 0;

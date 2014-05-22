@@ -1,5 +1,5 @@
 //
-//  lockfreestack_hp.h
+//  lockfreestack_leak.h
 //  LockFree
 //
 //  Created by Drunk on 22.05.14.
@@ -7,19 +7,31 @@
 //
 
 template<typename T>
-class LockFreeStach_leak
+class LockFreeStack_leak
 {
 private:
     struct node {
         std::shared_ptr<T> data;
-        node* next;
+        node* next = nullptr;
         node(T const& data_): data(std::make_shared<T>(data_)){}
+        node(std::shared_ptr<T> const& data_ptr): data(data_ptr){}
     };
     std::atomic<node*> head;
 public:
+    LockFreeStack_leak() {
+        head.store(nullptr);
+    }
     void push(T const& data)
     {
         node* const new_node=new node(data);
+        push_node(new_node);
+    }
+    void push(std::shared_ptr<T> const& data_ptr)
+    {
+        node* const new_node=new node(data_ptr);
+        push_node(new_node);
+    }
+    void push_node(node* const& new_node) {
         new_node->next=head.load();
         while(!head.compare_exchange_weak(new_node->next,new_node));
     }
