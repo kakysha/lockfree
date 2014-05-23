@@ -12,6 +12,7 @@
 #include "lockfreestack_aba.h"
 #include "lockfreestack_leak.h"
 #include "lockfreestack_tc.h"
+#include "lockfreestack_hp.h"
 
 struct LockedElement
 {
@@ -110,7 +111,8 @@ int main()
         double spinLockedTime = Test<SpinLockedStack<std::shared_ptr<int>>, int>(i);
         double lockFreeTimeABA = Test<LockFreeStack_aba<int>, int>(i);
         double lockFreeTimeTC = Test<LockFreeStack_tc<int>, int>(i);
-        printf("%d threads, Locked:%6d/msec, Lockfree_leak:%6d/msec, Spinlock:%6d/msec, LockFree_ABA:%6d/msec LockFree_TC:%6d/msec\n", i, (int)lockedTime, (int)lockFreeTimeLeak, (int)spinLockedTime, (int)lockFreeTimeABA, (int)lockFreeTimeTC);
+        double lockFreeTimeHP = Test<LockFreeStack_hp<int>, int>(i);
+        printf("%d threads, Locked:%6d/msec, Lockfree_leak:%6d/msec, Spinlock:%6d/msec, LockFree_ABA:%6d/msec LockFree_TC:%6d/msec, LockFree_HP:%6d\n", i, (int)lockedTime, (int)lockFreeTimeLeak, (int)spinLockedTime, (int)lockFreeTimeABA, (int)lockFreeTimeTC, (int)lockFreeTimeHP);
     }
     return 0;
 }
