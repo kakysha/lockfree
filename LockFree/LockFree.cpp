@@ -1,4 +1,4 @@
-#define MAX_THREADS 4
+#define MAX_THREADS 16
 
 #include <iostream>
 #include <cstdlib>
