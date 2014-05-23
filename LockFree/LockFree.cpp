@@ -1,4 +1,4 @@
-#define MAX_THREADS 16
+#define MAX_THREADS 4
 
 #include <iostream>
 #include <cstdlib>
@@ -106,10 +106,10 @@ int main()
 {
     for(int i=1; i<=MAX_THREADS; i++)
     {
-        double lockFreeTimeLeak = Test<LockFreeStack_leak<int>, int>(i);
         double lockedTime = Test<LockedStack<std::shared_ptr<int>>, int>(i);
         double spinLockedTime = Test<SpinLockedStack<std::shared_ptr<int>>, int>(i);
         double lockFreeTimeABA = Test<LockFreeStack_aba<int>, int>(i);
+        double lockFreeTimeLeak = Test<LockFreeStack_leak<int>, int>(i);
         double lockFreeTimeTC = Test<LockFreeStack_tc<int>, int>(i);
         double lockFreeTimeHP = Test<LockFreeStack_hp<int>, int>(i);
         printf("%d threads, Locked:%6d/msec, Lockfree_leak:%6d/msec, Spinlock:%6d/msec, LockFree_ABA:%6d/msec LockFree_TC:%6d/msec, LockFree_HP:%6d\n", i, (int)lockedTime, (int)lockFreeTimeLeak, (int)spinLockedTime, (int)lockFreeTimeABA, (int)lockFreeTimeTC, (int)lockFreeTimeHP);
