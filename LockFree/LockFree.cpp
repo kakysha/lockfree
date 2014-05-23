@@ -68,9 +68,9 @@ void Worker(Stack& st, Element* elems, int numElements, int* numOps, int threadI
 template<typename Stack, typename Element>
 double Test(int nthreads)
 {
-    const int num_elements = 10000;
+    const int num_elements = 1000;
     const int test_time = 1000;
-    const int test_iterations = 2;
+    const int test_iterations = 1;
     const int elem_per_thread = num_elements / nthreads;
     long long ops = 0;
     
@@ -96,7 +96,7 @@ double Test(int nthreads)
             threads[i].join();
             ops += numOps[i];
         }
-        
+        delete &st;
         delete[] elements;
     }
     return (double)ops / (test_time*test_iterations);

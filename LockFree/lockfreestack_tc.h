@@ -33,7 +33,7 @@ public:
             return m_counter.load(std::memory_order_acquire);
         }
         
-        bool CompareAndSwap(node* oldNode, uint64_t oldCounter, node* newNode, uint64_t newCounter)
+        bool CompareAndSwap(node*& oldNode, uint64_t& oldCounter, node* newNode, uint64_t newCounter)
         {
             bool cas_result;
             __asm__ __volatile__
@@ -99,13 +99,14 @@ public:
     std::shared_ptr<T> pop()
     {
         ++threads_in_pop;
-        node* old_head;
+        node* old_head = m_head.GetNode();
+        uint64_t oldCounter = m_head.GetCounter();
+        while (old_head && !m_head.CompareAndSwap(old_head, oldCounter, old_head->next, oldCounter + 1));
         std::shared_ptr<T> res;
-        while(!TryPopStack(old_head)){}
         if (old_head) {
             res.swap(old_head->data);
-            try_reclaim(old_head);
         }
+        try_reclaim(old_head);
         return res;
     }
     
@@ -136,7 +137,7 @@ private:
             }
             delete old_head;
         } else {
-            chain_pending_node(old_head);
+            if (old_head) chain_pending_node(old_head);
             --threads_in_pop;
         }
     }

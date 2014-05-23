@@ -98,8 +98,11 @@ public:
     std::shared_ptr<T> pop()
     {
         node* res;
+        std::shared_ptr<T> tmp;
         while(!TryPopStack(res)){}
-        return res ? res->data : std::shared_ptr<T>();
+        if (res)
+            tmp.swap(res->data);
+        return tmp;
     }
     
 private:
