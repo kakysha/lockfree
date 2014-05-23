@@ -1,1 +1,4 @@
 build/
+LockFree/Debug
+LockFree/obj
+LockFree/VisualGDBCache

@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source files">
+      <UniqueIdentifier>{3eefac62-21a1-4651-85bf-b4e3309a6749}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header files">
+      <UniqueIdentifier>{25e93b22-acf1-48c1-87a4-636c96bbd299}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource files">
+      <UniqueIdentifier>{833462f0-f4ff-4a78-addf-9efb4e3ec435}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Make files">
+      <UniqueIdentifier>{d1ee0312-3b1a-4f95-af61-674965541103}</UniqueIdentifier>
+      <Extensions>*.mak</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Makefile" />
+    <None Include="debug.mak">
+      <Filter>Make files</Filter>
+    </None>
+    <None Include="release.mak">
+      <Filter>Make files</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="LockFree.cpp">
+      <Filter>Source files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="lockfreestack_aba.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="lockfreestack_hp.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="lockfreestack_leak.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="lockfreestack_tc.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="lockstack.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+    <ClInclude Include="spinlockedstack.h">
+      <Filter>Header files</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
