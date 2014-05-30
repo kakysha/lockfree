@@ -56,44 +56,16 @@ public:
     //
     __attribute__((aligned(16)));
     
-    bool TryPushStack(std::shared_ptr<T> const& data_ptr)
+    void push(std::shared_ptr<T> const& data_ptr)
     {
         node* const new_node=new node(data_ptr);
         node* oldHead;
         uint64_t oldCounter;
-        
-        oldHead = m_head.GetNode();
-        oldCounter = m_head.GetCounter();
-        new_node->next = oldHead;
-        return m_head.CompareAndSwap(oldHead, oldCounter, new_node, oldCounter + 1);
-    }
-    
-    bool TryPopStack(node*& oldHead)
-    {
-        oldHead = m_head.GetNode();
-        uint64_t oldCounter = m_head.GetCounter();
-        if(oldHead == nullptr)
-        {
-            return true;
-        }
-        //m_hazard[threadId*8].store(oldHead, std::memory_order_seq_cst);
-        if(m_head.GetNode() != oldHead)
-        {
-            return false;
-        }
-        return m_head.CompareAndSwap(oldHead, oldCounter, oldHead->next, oldCounter + 1);
-    }
-    
-    void push(std::shared_ptr<T> const& data_ptr)
-    {
-        while(true)
-        {
-            if(TryPushStack(data_ptr))
-            {
-                return;
-            }
-            //std::this_thread::sleep_for(std::chrono::milliseconds(250));
-        }
+        do {
+            oldHead = m_head.GetNode();
+            oldCounter = m_head.GetCounter();
+            new_node->next = oldHead;
+        } while (!m_head.CompareAndSwap(oldHead, oldCounter, new_node, oldCounter + 1));
     }
     
     std::shared_ptr<T> pop()
@@ -135,7 +107,7 @@ private:
             } else if (nodes_to_delete) {
                 chain_pending_nodes(nodes_to_delete);
             }
-            delete old_head;
+            if (old_head) delete old_head;
         } else {
             if (old_head) chain_pending_node(old_head);
             --threads_in_pop;

@@ -1,4 +1,10 @@
 #define MAX_THREADS 4
+#define TEST_MUTEX 1
+#define TEST_SPINLOCK 1
+#define TEST_ABA 1
+#define TEST_LEAK 1
+#define TEST_TC 1
+#define TEST_HP 1
 
 #include <iostream>
 #include <cstdlib>
@@ -68,9 +74,9 @@ void Worker(Stack& st, Element* elems, int numElements, int* numOps, int threadI
 template<typename Stack, typename Element>
 double Test(int nthreads)
 {
-    const int num_elements = 1000;
+    const int num_elements = 1000000;
     const int test_time = 1000;
-    const int test_iterations = 1;
+    const int test_iterations = 5;
     const int elem_per_thread = num_elements / nthreads;
     long long ops = 0;
     
@@ -96,7 +102,6 @@ double Test(int nthreads)
             threads[i].join();
             ops += numOps[i];
         }
-        delete &st;
         delete[] elements;
     }
     return (double)ops / (test_time*test_iterations);
@@ -106,13 +111,13 @@ int main()
 {
     for(int i=1; i<=MAX_THREADS; i++)
     {
-        double lockedTime = Test<LockedStack<std::shared_ptr<int>>, int>(i);
-        double spinLockedTime = Test<SpinLockedStack<std::shared_ptr<int>>, int>(i);
-        double lockFreeTimeABA = Test<LockFreeStack_aba<int>, int>(i);
-        double lockFreeTimeLeak = Test<LockFreeStack_leak<int>, int>(i);
-        double lockFreeTimeTC = Test<LockFreeStack_tc<int>, int>(i);
-        double lockFreeTimeHP = Test<LockFreeStack_hp<int>, int>(i);
-        printf("%d threads, Locked:%6d/msec, Lockfree_leak:%6d/msec, Spinlock:%6d/msec, LockFree_ABA:%6d/msec LockFree_TC:%6d/msec, LockFree_HP:%6d\n", i, (int)lockedTime, (int)lockFreeTimeLeak, (int)spinLockedTime, (int)lockFreeTimeABA, (int)lockFreeTimeTC, (int)lockFreeTimeHP);
+        double lockedTime = TEST_MUTEX ? Test<LockedStack<std::shared_ptr<int>>, int>(i) : 0;
+        double spinLockedTime = TEST_SPINLOCK ? Test<SpinLockedStack<std::shared_ptr<int>>, int>(i) : 0;
+        double lockFreeTimeABA = TEST_ABA ? Test<LockFreeStack_aba<int>, int>(i) : 0;
+        double lockFreeTimeLeak = TEST_LEAK ? Test<LockFreeStack_leak<int>, int>(i) : 0;
+        double lockFreeTimeTC = TEST_TC ? Test<LockFreeStack_tc<int>, int>(i) : 0;
+        double lockFreeTimeHP = TEST_HP ? Test<LockFreeStack_hp<int>, int>(i) : 0;
+        printf("%d threads, Locked:%5d/msec, Spinlock:%5d/msec, LockFree_ABA:%5d/msec, Lockfree_leak:%5d/msec, LockFree_TC:%5d/msec, LockFree_HP:%5d/msec\n", i, (int)lockedTime, (int)spinLockedTime, (int)lockFreeTimeABA, (int)lockFreeTimeLeak, (int)lockFreeTimeTC, (int)lockFreeTimeHP);
     }
     return 0;
 }

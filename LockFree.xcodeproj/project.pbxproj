@@ -15,7 +15,7 @@
 /* Begin PBXCopyFilesBuildPhase section */
 		5792E35819241C7200DC1ADD /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 8;
 			dstPath = /usr/share/man/man1/;
 			dstSubfolderSpec = 0;
 			files = (
@@ -221,6 +221,7 @@
 		5792E36519241C7200DC1ADD /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};

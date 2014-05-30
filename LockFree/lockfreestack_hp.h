@@ -117,7 +117,7 @@ void delete_nodes_with_no_hazards()
 template <typename T>
 class LockFreeStack_hp
 {
-public:
+public:   
     struct node {
         std::shared_ptr<T> data;
         node* next = nullptr;
@@ -158,38 +158,18 @@ public:
         std::atomic<node*> m_node;
         std::atomic<uint64_t> m_counter;
     }
-    // 16-byte alignment is required for double-width
-    // compare and swap
-    //
     __attribute__((aligned(16)));
     
-    bool TryPushStack(std::shared_ptr<T> const& data_ptr)
+    void push(std::shared_ptr<T> const& data_ptr)
     {
         node* const new_node=new node(data_ptr);
         node* oldHead;
         uint64_t oldCounter;
-        
-        oldHead = m_head.GetNode();
-        oldCounter = m_head.GetCounter();
-        new_node->next = oldHead;
-        return m_head.CompareAndSwap(oldHead, oldCounter, new_node, oldCounter + 1);
-    }
-    
-    bool TryPopStack(node*& oldHead)
-    {
-        
-    }
-    
-    void push(std::shared_ptr<T> const& data_ptr)
-    {
-        while(true)
-        {
-            if(TryPushStack(data_ptr))
-            {
-                return;
-            }
-            //std::this_thread::sleep_for(std::chrono::milliseconds(250));
-        }
+        do {
+            oldHead = m_head.GetNode();
+            oldCounter = m_head.GetCounter();
+            new_node->next = oldHead;
+        } while (!m_head.CompareAndSwap(oldHead, oldCounter, new_node, oldCounter + 1));
     }
     
     std::shared_ptr<T> pop()

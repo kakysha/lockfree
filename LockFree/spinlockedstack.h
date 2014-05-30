@@ -19,7 +19,7 @@ public:
             {
                 return;
             }
-            //std::this_thread::sleep_for(std::chrono::milliseconds(250));
+            std::this_thread::sleep_for(std::chrono::microseconds(50));
         }
     }
     void Release()
@@ -39,7 +39,6 @@ public:
     {
         m_lock.Acquire();
         m_stack.push(entry);
-        //std::this_thread::sleep_for(std::chrono::nanoseconds(1));
         m_lock.Release();
     }
     

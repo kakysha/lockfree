@@ -17,9 +17,6 @@ public:
         m_stack.push(entry);
     }
     
-    // For compatability with the LockFreeStack interface,
-    // add an unused int parameter.
-    //
     T pop()
     {
         std::lock_guard<std::mutex> lock(m_mutex);

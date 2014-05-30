@@ -32,7 +32,7 @@ public:
             return m_counter.load(std::memory_order_acquire);
         }
         
-        bool CompareAndSwap(node* oldNode, uint64_t oldCounter, node* newNode, uint64_t newCounter)
+        bool CompareAndSwap(node*& oldNode, uint64_t& oldCounter, node* newNode, uint64_t newCounter)
         {
             bool cas_result;
             __asm__ __volatile__
@@ -54,55 +54,29 @@ public:
     // compare and swap
     //
     __attribute__((aligned(16)));
-    
-    bool TryPushStack(std::shared_ptr<T> const& data_ptr)
+        
+    void push(std::shared_ptr<T> const& data_ptr)
     {
         node* const new_node=new node(data_ptr);
         node* oldHead;
         uint64_t oldCounter;
-        
-        oldHead = m_head.GetNode();
-        oldCounter = m_head.GetCounter();
-        new_node->next = oldHead;
-        return m_head.CompareAndSwap(oldHead, oldCounter, new_node, oldCounter + 1);
-    }
-    
-    bool TryPopStack(node*& oldHead)
-    {
-        oldHead = m_head.GetNode();
-        uint64_t oldCounter = m_head.GetCounter();
-        if(oldHead == nullptr)
-        {
-            return true;
-        }
-        //m_hazard[threadId*8].store(oldHead, std::memory_order_seq_cst);
-        if(m_head.GetNode() != oldHead)
-        {
-            return false;
-        }
-        return m_head.CompareAndSwap(oldHead, oldCounter, oldHead->next, oldCounter + 1);
-    }
-    
-    void push(std::shared_ptr<T> const& data_ptr)
-    {
-        while(true)
-        {
-            if(TryPushStack(data_ptr))
-            {
-                return;
-            }
-            //std::this_thread::sleep_for(std::chrono::milliseconds(250));
-        }
+        do {
+            oldHead = m_head.GetNode();
+            oldCounter = m_head.GetCounter();
+            new_node->next = oldHead;
+        } while (!m_head.CompareAndSwap(oldHead, oldCounter, new_node, oldCounter + 1));
     }
     
     std::shared_ptr<T> pop()
     {
-        node* res;
-        std::shared_ptr<T> tmp;
-        while(!TryPopStack(res)){}
-        if (res)
-            tmp.swap(res->data);
-        return tmp;
+        node* old_head = m_head.GetNode();
+        uint64_t oldCounter = m_head.GetCounter();
+        while (old_head && !m_head.CompareAndSwap(old_head, oldCounter, old_head->next, oldCounter + 1));
+        std::shared_ptr<T> res;
+        if (old_head) {
+            res.swap(old_head->data);
+        }
+        return res;
     }
     
 private:
